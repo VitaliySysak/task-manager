@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id               String            @id @default(uuid()) @db.Uuid
+  email            String            @unique
+  password         String
+  lastActive       DateTime          @default(now())
+  verified         DateTime?
+  providerId       String?
+  provider         Provider?
+  role             UserRole          @default(USER)
+  verificationCode VerificationCode?
+  tasks            Task[]
+  sessions         Session[]
+  profile          Profile?
+  achivement       Achivement?
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum Provider {
+  google
+  credentials
+}
+
+model Session {
+  id                         String   @id @default(uuid()) @db.Uuid
+  googleCalendarRefreshToken String?  @unique
+  ipAddress                  String?
+  userAgent                  String?
+  createdAt                  DateTime @default(now())
+  expiresAt                  DateTime
+  userId                     String   @db.Uuid
+  user                       User     @relation(fields: [userId], references: [id])
+}
+
+model Profile {
+  id        String   @id @default(uuid()) @db.Uuid
+  fullName  String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  userId    String   @unique @db.Uuid
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Achivement {
+  id            String @id @default(uuid()) @db.Uuid
+  completeSteak Int    @default(0)
+  userId        String @unique @db.Uuid
+  user          User   @relation(fields: [userId], references: [id])
+}
+
+model VerificationCode {
+  id        String   @id @default(uuid()) @db.Uuid
+  code      String   @db.Char(6)
+  createdAt DateTime @default(now())
+  userId    String   @unique @db.Uuid
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Task {
+  id          String     @id @default(uuid()) @db.Uuid
+  title       String
+  priority    Priority   @default(MEDIUM)
+  description String
+  status      TaskStatus @default(TODO)
+  createdAt   DateTime   @default(now())
+  f   DateTime   @updatedAt
+  userId      String     @db.Uuid
+  user        User       @relation(fields: [userId], references: [id])
+}
+
+enum TaskStatus {
+  TODO
+  DONE
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGHT
+  CRITICAL
+}

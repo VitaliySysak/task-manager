@@ -1,0 +1,104 @@
+name: Push Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    outputs:
+      frontend_changed: ${{ steps.filter.outputs.frontend }}
+      backend_changed: ${{ steps.filter.outputs.backend }}
+      config_changed: ${{ steps.filter.outputs.config }}
+    environment: main
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Check for file changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'task-manager-frontend/**'
+            backend:
+              - 'task-manager-backend/**'
+            config:
+              - 'compose.yaml'
+              - 'task-manager-maintenance/**'
+              - 'task-manager-database/**'
+              - '.github/workflows/**'
+
+      - name: Log in to DockerHub
+        if: steps.filter.outputs.frontend == 'true' || steps.filter.outputs.backend == 'true'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Build and push backend
+        if: steps.filter.outputs.backend == 'true'
+        uses: docker/build-push-action@v5
+        with:
+          context: ./task-manager-backend
+          push: true
+          tags: bering152/task-manager-backend:latest
+      - name: Build and push frontend
+        if: steps.filter.outputs.frontend == 'true'
+        uses: docker/build-push-action@v5
+        with:
+          context: ./task-manager-frontend
+          push: true
+          tags: bering152/task-manager-frontend:latest
+          build-args: |
+            VITE_GIT_HASH=${{ github.sha }}
+            VITE_API_URL=${{ secrets.VITE_API_URL }}
+            VITE_GOOGLE_AUTH_URL=${{ secrets.VITE_GOOGLE_AUTH_URL }}
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: ${{ needs.build-and-push.outputs.frontend_changed == 'true' || needs.build-and-push.outputs.backend_changed == 'true' || needs.build-and-push.outputs.config_changed == 'true' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Copy files to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          source: "compose.yaml,task-manager-maintenance,task-manager-database"
+          target: "task-manager"
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        env:
+          BACKEND_GIT_HASH: ${{ github.sha }}
+          FRONTEND_CHANGED: ${{ needs.build-and-push.outputs.frontend_changed }}
+          BACKEND_CHANGED: ${{ needs.build-and-push.outputs.backend_changed }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          envs: BACKEND_GIT_HASH,FRONTEND_CHANGED,BACKEND_CHANGED
+          script: |
+            cd task-manager
+            docker login -u ${{ secrets.REGISTRY_USER }} -p ${{ secrets.REGISTRY_PASSWORD }}
+
+            if [ "$FRONTEND_CHANGED" == "true" ]; then
+              echo "Pulling new Frontend..."
+              docker pull bering152/task-manager-frontend:latest
+            fi
+            if [ "$BACKEND_CHANGED" == "true" ]; then
+              echo "Pulling new Backend..."
+              docker pull bering152/task-manager-backend:latest
+            fi
+            if [ "$BACKEND_CHANGED" == "true" ] && [ -n "$BACKEND_GIT_HASH" ]; then
+               sed -i '/^GIT_HASH=/d' ./task-manager-backend/.env.production
+               echo "GIT_HASH=$BACKEND_GIT_HASH" >> ./task-manager-backend/.env.production
+            fi
+
+            docker compose up -d
+            docker compose exec -T backend npx prisma db push --accept-data-loss
+            docker image prune -f
