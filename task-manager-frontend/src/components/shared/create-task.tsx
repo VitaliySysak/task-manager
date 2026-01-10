@@ -18,6 +18,7 @@ import {
 } from '@/store/tasks/tasks-slice';
 
 import { TodoDrawer } from './todo-drawer';
+import { Input } from '../ui/input';
 
 type Props = {
   className?: string;
@@ -47,22 +48,18 @@ export const CreateTask: React.FC<Props> = ({ className }) => {
               description: taskForm.description,
               status: taskForm.status,
             });
-          }
-          else {
+          } else {
             toast.error('Task with same title alredy exist');
           }
           dispatch(resetTaskForm());
+        } else {
+          toast.error("Task title can't be empty");
         }
-        else {
-          toast.error('Task title can\'t be empty');
-        }
-      }
-      else {
+      } else {
         navigate('/auth');
         toast.error('You need to log in!');
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error while execution create-task/onSubmitHandler:', error);
     }
   };
@@ -71,7 +68,7 @@ export const CreateTask: React.FC<Props> = ({ className }) => {
       <form
         className={cn(
           'flex px-4 sm:px-8 gap-4 sm:gap-8 items-center bg-primary min-w-0 min-h-16 2xl:min-h-20',
-          'overflow-y-auto overflow-x-hidden dark:scheme-dark rounded-md',
+          'overflow-y-auto overflow-x-hidden rounded-md',
           className,
         )}
         onSubmit={onSubmitHandler}
@@ -80,17 +77,17 @@ export const CreateTask: React.FC<Props> = ({ className }) => {
           onClick={() => dispatch(toggleTaskIsCompleted())}
           className={cn(
             taskForm.status === TaskStatus.DONE
-              ? 'bg-(image:--linear-gradient) before:text-xs sm:before:text-base before:content-[\'✔\'] before:text-white before:flex before:items-center before:justify-center pt-1'
+              ? "bg-(image:--linear-gradient) before:text-xs sm:before:text-base before:content-['✔'] before:text-white before:flex before:items-center before:justify-center pt-1"
               : 'bg-transparent',
             'aspect-square border w-6 h-6 sm:w-8 sm:h-8 rounded-full border-(--very-dark-grayish-blue-2) cursor-pointer',
           )}
         />
-        <input
+        <Input
           name="create-task"
-          className="min-w-0 h-8 text-base sm:text-xl lg:text-2xl text-(--light-grayish-blue) caret-white focus:outline-none flex-1"
+          className="h-8 text-base border-none sm:text-xl lg:text-2xl text-secondary-dark caret-white flex-1 placeholder:translate-y-0.5"
           placeholder="Create a new todo..."
           value={taskForm.title}
-          onChange={event => dispatch(setTaskTitle(event.target.value))}
+          onChange={(event) => dispatch(setTaskTitle(event.target.value))}
         />
         <div className="flex gap-2 sm:pr-0">
           <button

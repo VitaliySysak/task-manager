@@ -1,21 +1,25 @@
-import { TodoBlock } from '../components/shared/todo-block';
+import { cn } from '@/lib/utils';
+import { TodoHeader } from '@/components/shared/todo-header';
+import { CreateTask } from '@/components/shared/create-task';
+import { Bg } from '@/components/shared/bg';
+import { TodoBody } from '@/components/shared/todo-body';
 
 export default function Home() {
   return (
     <>
-      <img
-        className="w-full hidden sm:hidden md:hidden lg:block"
-        src="/images/bg-desktop-dark.webp"
-        fetchPriority="high"
-        alt="hero"
-      />
-      <img
-        className="w-full sm:block md:block lg:hidden"
-        src="/images/bg-mobile-dark.webp"
-        fetchPriority="high"
-        alt="hero"
-      />
-      <TodoBlock />
+      <Bg />
+      <div className={cn('w-full h-full flex justify-center items-center absolute')}>
+        <div
+          className={cn(
+            'flex flex-col justify-center gap-4 sm:gap-6 2xl:gap-8',
+            'w-[clamp(16rem,86vw,30rem)] sm:w-[clamp(18rem,76vw,46rem)] md:w-[clamp(18rem,76vw,40rem)] lg:w-160 2xl:w-[clamp(18rem,76vw,46rem)]',
+          )}
+        >
+          <TodoHeader />
+          <CreateTask />
+          <TodoBody />
+        </div>
+      </div>
     </>
   );
 }

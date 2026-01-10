@@ -7,6 +7,7 @@ import { AuthModal } from '../components/shared/auth-modal';
 import { Button } from '../components/ui/button';
 import { GlowButton } from '../components/ui/glow-button';
 import { GoogleButton } from '../components/ui/google-button';
+import toast from 'react-hot-toast';
 
 export default function Auth() {
   const [logOut] = useLogOutMutation();
@@ -22,8 +23,7 @@ export default function Auth() {
 
     if (type === 'register') {
       setOpenSignUp(true);
-    }
-    else if (type === 'login') {
+    } else if (type === 'login') {
       setOpenSignIn(true);
     }
   }, [location.search]);
@@ -35,10 +35,8 @@ export default function Auth() {
     searchParams.set('type', type);
     navigate({ search: searchParams.toString() }, { replace: true });
 
-    if (type === 'register')
-      setOpenSignUp(true);
-    else if (type === 'login')
-      setOpenSignIn(true);
+    if (type === 'register') setOpenSignUp(true);
+    else if (type === 'login') setOpenSignIn(true);
   };
 
   const closeModal = () => {
@@ -50,18 +48,23 @@ export default function Auth() {
     setOpenSignIn(false);
   };
 
+  const onLogOut = async () => {
+    await logOut();
+    toast.success('logged out successfully');
+  };
+
   return (
     <section className="flex flex-col-reverse h-screen lg:flex-row">
       {/* Left side */}
       <aside className="bg-secondary relative flex flex-col justify-baseline items-center sm:flex-1 h-[30%] sm:h-auto overflow-hidden">
-        <ul className="relative flex flex-col my-auto text-(--primary-font) text-sm md:text-sm lg:text-xl font-bold space-y-5 sm:space-y-8 px-10">
+        <ul className="relative flex flex-col my-auto text-secondary-dark text-sm md:text-sm lg:text-xl font-bold space-y-5 sm:space-y-8 px-10">
           <li className="flex items-center gap-2">Stay organized and focused every day.</li>
           <li className="flex items-center gap-2">Track your tasks and boost your productivity.</li>
           <li className="flex items-center gap-2">Start your day with clear priorities.</li>
         </ul>
         <div className="flex justify-center sm:justify-start items-center w-full h-18 px-4">
           <div className="flex gap-4 items-center">
-            <Button className="bg-black font-semibold rounded-xl" onClick={() => logOut()}>
+            <Button className="bg-black font-semibold rounded-xl" onClick={onLogOut}>
               Log Out
             </Button>
             <Link to="/privacy" className="text-blue-600">
@@ -85,7 +88,7 @@ export default function Auth() {
           alt="Background"
           className="hidden absolute inset-0 w-full h-full object-cover z-0"
         />
-        <div className="realtive z-10 flex flex-col px-10 my-auto text-(--primary-font) gap-4">
+        <div className="realtive z-10 flex flex-col px-10 my-auto text-secondary-dark gap-4">
           <h1 className="self-start text-4xl font-bold mb-12">Stay on top of your tasks, every day</h1>
 
           <p className="font-bold">Get started with your Todo journey now.</p>

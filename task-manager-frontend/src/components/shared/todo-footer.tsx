@@ -18,16 +18,15 @@ type Props = {
 export const TodoFooter: React.FC<Props> = ({ className }) => {
   const dispatch = useDispatch();
   const activeFilter = useSelector(selectActiveFilter);
-  const { data: tasks } = useGetTasksQuery();
+  const { data: tasks, isLoading } = useGetTasksQuery();
   const [deleteTask] = useDeleteCompletedTasksMutation();
-  const taskToCompleteCount = tasks?.filter(({ status }) => status === TaskStatus.TODO).length;
+  const taskToCompleteCount = tasks?.filter(({ status }) => status === TaskStatus.TODO).length ?? 0;
   const completedTasksId = tasks?.filter(({ status }) => status === TaskStatus.DONE).map(({ id }) => id) ?? [];
 
-  const deleteCompletedTasks = () => {
+  const deleteCompletedTasks = async () => {
     if (completedTasksId.length) {
-      deleteTask({ ids: completedTasksId });
-    }
-    else {
+      await deleteTask({ ids: completedTasksId });
+    } else {
       toast.error('No tasks completed');
     }
   };
@@ -41,19 +40,14 @@ export const TodoFooter: React.FC<Props> = ({ className }) => {
         )}
       >
         <div className="min-w-25">
-          {taskToCompleteCount !== undefined
-            ? (
-                <h3 className="text-sm sm:text-md 2xl:text-lg font-light ">
-                  <span className="tabular-nums">{taskToCompleteCount}</span>
-                  {' '}
-                  {taskToCompleteCount === 1 ? 'task' : 'tasks'}
-                  {' '}
-                  left
-                </h3>
-              )
-            : (
-                <Skeleton className="w-22 h-6" />
-              )}
+          {!isLoading ? (
+            <h3 className="text-sm sm:text-md 2xl:text-lg font-light ">
+              <span className="tabular-nums">{taskToCompleteCount}</span> {taskToCompleteCount === 1 ? 'task' : 'tasks'}{' '}
+              left
+            </h3>
+          ) : (
+            <Skeleton className="w-22 h-6" />
+          )}
         </div>
         <div className="hidden sm:flex">
           <Button

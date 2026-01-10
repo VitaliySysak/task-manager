@@ -22,13 +22,11 @@
     "@nestjs/common": "^11.1.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.1",
-    "@nestjs/jwt": "^11.0.2",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.1",
     "@nestjs/swagger": "^11.2.3",
     "@prisma/adapter-pg": "^7.0.0",
     "@prisma/client": "^7.2.0",
-    "argon2": "^0.44.0",
     "axios": "^1.13.2",
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
@@ -38,14 +36,10 @@
     "dotenv": "^17.2.3",
     "handlebars": "^4.7.8",
     "nodemailer": "^7.0.12",
-    "open": "^11.0.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.1",
     "pg": "^8.16.3",
     "redis": "^5.10.0",
-    "reflect-metadata": "^0.2.2",
-    "resend": "^6.6.0",
-    "rxjs": "^7.8.2",
     "swagger-themes": "^1.4.3"
   },
   "devDependencies": {
@@ -73,18 +67,14 @@
     "globals": "^16.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.6",
-    "open-cli": "^8.0.0",
     "prettier": "^3.4.2",
     "prisma": "^7.2.0",
-    "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",
-    "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.20.0",
-    "wait-on": "^9.0.3"
+    "typescript-eslint": "^8.20.0"
   },
   "lint-staged": {
     "*": "npm run lint"

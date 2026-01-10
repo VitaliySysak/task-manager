@@ -5,6 +5,7 @@ import type { TaskStatus } from '@/models/auth.model';
 
 import { cn } from '@/lib/utils';
 import { setTaskDescription } from '@/store/tasks/tasks-slice';
+import { Textarea } from '@/components/ui/textarea';
 
 type FormData = {
   title: string;
@@ -30,13 +31,11 @@ export const TodoDrawer: React.FC<Props> = ({ className, formData }) => {
       <label htmlFor="description" className="block mb-2 text-sm sm:text-base">
         Add a description:
       </label>
-      <textarea
-        id="description"
-        value={formData.description}
-        onChange={event => dispatch(setTaskDescription(event.target.value))}
-        className="w-full p-2 rounded bg-(--very-dark-grayish-blue) max-h-100 focus:outline-none"
-        rows={3}
+      <Textarea
         placeholder="Write more details about your task..."
+        value={formData.description}
+        onChange={(event) => dispatch(setTaskDescription(event.target.value))}
+        className="text-white/70"
       />
     </div>
   );

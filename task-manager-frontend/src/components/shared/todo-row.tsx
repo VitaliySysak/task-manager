@@ -34,25 +34,23 @@ export const TodoRow: React.FC<Props> = ({ className, id, title, description, st
           className,
         )}
       >
-        {isLoading
-          ? (
-              <LucideLoaderCircle className="w-6 h-6 sm:w-8 sm:h-8 animate-spin" color="white" />
-            )
-          : (
-              <figure
-                onClick={onUpdate}
-                className={cn(
-                  status === TaskStatus.DONE
-                    ? 'bg-(image:--linear-gradient) before:text-xs sm:before:text-base before:content-[\'✔\'] before:text-white before:flex before:items-center before:justify-center pt-1'
-                    : 'bg-transparent',
-                  'border w-6 h-6 sm:w-8 sm:h-8 rounded-full border-(--very-dark-grayish-blue-2) cursor-pointer',
-                )}
-              />
+        {isLoading ? (
+          <LucideLoaderCircle className="w-6 h-6 sm:w-8 sm:h-8 animate-spin" color="white" />
+        ) : (
+          <figure
+            onClick={onUpdate}
+            className={cn(
+              status === TaskStatus.DONE
+                ? "bg-(image:--linear-gradient) before:text-xs sm:before:text-base before:content-['✔'] before:text-white before:flex before:items-center before:justify-center pt-1"
+                : 'bg-transparent',
+              'border w-6 h-6 sm:w-8 sm:h-8 rounded-full border-(--very-dark-grayish-blue-2) cursor-pointer',
             )}
+          />
+        )}
 
         <h2
           className={cn(
-            'text-base sm:text-xl 2xl:text-2xl caret-white text-(--primary-font)',
+            'text-base sm:text-xl 2xl:text-2xl caret-white text-secondary-dark',
             'focus:outline-none flex-1 wrap-break-word whitespace-normal overflow-hidden',
             status === TaskStatus.DONE && 'line-through text-(--very-dark-grayish-blue)',
           )}
@@ -62,7 +60,7 @@ export const TodoRow: React.FC<Props> = ({ className, id, title, description, st
         <div className="flex gap-2 items-center">
           {description && (
             <button
-              onClick={() => setShowDrawer(prev => !prev)}
+              onClick={() => setShowDrawer((prev) => !prev)}
               className="flex justify-center items-center w-6 h-6 sm:w-10 sm:h-10 cursor-pointer"
               type="button"
             >

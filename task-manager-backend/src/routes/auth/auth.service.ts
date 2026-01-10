@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { Provider, User, UserRole } from '@prisma/client';
 import { compare, hash } from 'bcrypt';
-import { Request } from 'express';
+import type { Request } from 'express';
 
 import { UserSession } from '@/@types/user';
 import { EmailService } from '@/email/email.service';

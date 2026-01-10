@@ -1,10 +1,10 @@
 import { Inject, Injectable, NestMiddleware, NotFoundException } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
-import { Response, NextFunction, CookieOptions } from 'express';
+import type { Response, NextFunction, CookieOptions } from 'express';
 
 import { RefreshUserRequest } from '@/@types/user';
 import { cookieConfig, cookieConfigKey } from '@/routes/auth/config/cookie.config';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '@/prisma/prisma.service';
 
 @Injectable()
 export class UserAuthorizationMiddleware implements NestMiddleware {
